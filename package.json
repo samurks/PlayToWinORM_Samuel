@@ -1,10 +1,10 @@
 {
   "name": "playtowin_samuel",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +14,10 @@
     "express": "^4.19.2",
     "express-handlebars": "^7.1.2",
     "express-sequelize": "^0.0.4",
+    "mysql2": "^3.9.6",
     "nodemon": "^3.1.0",
-    "pg": "^8.11.3"
-  }
+    "pg": "^8.11.5",
+    "sequelize": "^6.37.3"
+  },
+  "description": ""
 }
