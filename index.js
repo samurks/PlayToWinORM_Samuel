@@ -1,4 +1,4 @@
-// Importações de módulos e configurações
+
 require("dotenv").config();
 const express = require("express");
 const conn = require("./db/conn");
@@ -6,19 +6,23 @@ const Jogo = require("./models/Jogo");
 const handlebars = require("express-handlebars");
 const { json } = require("express/lib/response");
 const Usuario = require("./models/Usuario");
-const res = require("express/lib/response");
+const Cartao = require("./models/Cartao");
+const Conquista = require("./models/Conquista")
+
+Jogo.belongsToMany(Usuario, { through: "aquisicoes" });
+Usuario.belongsToMany(Jogo, { through: "aquisicoes" });
 
 const app = express();
 
-// HandleBars
+
 app.engine("handlebars", handlebars.engine())
 app.set("view engine", "handlebars")
 
-// Configurações do middleware
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Rotas
+
 app.post("/jogo/novo", async (req, res) => {
   const dadosJogo = {
     titulo: req.body.titulo,
@@ -27,7 +31,7 @@ app.post("/jogo/novo", async (req, res) => {
   }
 
   const jogo = await Jogo.create(dadosJogo);
-  res.send("Jogo cadastrado com id" + jogo.id + `<a href= "http://localhost:8000/usuarios"> VOltar </a>`);
+  res.send("Jogo cadastrado com id" + jogo.id);
 });
 
 
@@ -38,7 +42,7 @@ app.post("/usuario/novo", async (req, res) => {
   }
 
   const usuario = await Usuario.create(dadosUsuario);
-  res.send("Usuario cadastrado com id" + usuario.id  + `<a href= "http://localhost:8000/usuarios"> VOltar </a>`);
+  res.send("Usuário inserido sob o id " + usuario.id);
 });
 
 app.get("/jogo/novo", (req, res) => {
@@ -59,33 +63,87 @@ app.get("/usuarios", async (req, res) => {
   res.render("usuarios", { usuarios })
 })
 
-app.get("/usuarios/:id/atualizar", async (req, res) => {
+app.get("/usuarios/:id/update", async (req, res) => {
   const id = req.params.id
   const usuario = await Usuario.findByPk(id, { raw: true })
   res.render("formUsuario", { usuario },) ;
 })
 
 
-app.post("/usuarios/:id/atualizar", async (req, res) => {
-  const id = req.params.id
+app.post("/usuarios/:id/update", async (req, res) => {
+  const id = parseInt(req.params.id);
 
   const dadosUsuario = {
     nickname: req.body.nickname,
     nome: req.body.nome
   }
 
-  const registroAfetados = await Usuario.update(dadosUsuario, { where: { id: id } });
+  const retorno  = await Usuario.update(dadosUsuario, { where: { id: id } });
 
-  if(registroAfetados > 0){
-    res.redirect("/usuarios")
-  }else{
-    res.send("Erro ap atualizar esse cabra aqui")
+  if (retorno > 0) {
+    res.redirect("/usuarios");
+  } else {
+    res.send("Erro ao atualizar usuário");
   }
-})
+});
+
+app.get('/jogos/:id/conquistas', async (req, res) => {
+  const id = parseInt(req.params.id)
+  const jogo = await Jogo.findByPk(id, { include: ["Conquista"] });
+
+  let conquistas = jogo.Conquista;
+  conquistas = conquistas.map((conquista) => conquista.toJSON())
+
+
+  res.render("Conquista.handlebars", { jogo: jogo.toJSON(), conquistas });
+});
+
+app.get("/jogos/:id/novaConquista", async (req, res) => {
+  const id = parseInt(req.params.id);
+  const jogo = await Jogo.findByPk(id, { raw: true });
+
+  res.render("formConquista", { jogo });
+});
+
+app.post("/jogos/:id/novaConquista", async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const dadosConquista = {
+    titulo: req.body.titulo,
+    descricao: req.body.descricao,
+    JogoId: id,
+  };
+
+  await Conquista.create(dadosConquista);
+
+  res.redirect(`/jogos/${id}/conquistas`);
+});
+
+app.get("/usuarios/:id/novoCartao", async (req, res) => {
+  const id = parseInt(req.params.id);
+  const usuario = await Usuario.findByPk(id, { raw: true });
+
+  res.render("formCartao", { usuario });
+});
+
+app.post("/usuarios/:id/novoCartao", async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const dadosCartao = {
+    numero: req.body.numero,
+    nome: req.body.nome,
+    codSeguranca: req.body.codSeguranca,
+    UsuarioId: id,
+  };
+
+  await Cartao.create(dadosCartao);
+
+  res.redirect(`/usuarios/${id}/cartoes`);
+});
 
 // Inicialização do servidor
 app.listen(8000, () => {
-  console.log("Abridu!");
+  console.log("Online");
   console.log("http://localhost:8000/")
 });
 
