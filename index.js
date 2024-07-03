@@ -66,7 +66,7 @@ app.get("/usuarios", async (req, res) => {
 app.get("/usuarios/:id/update", async (req, res) => {
   const id = req.params.id
   const usuario = await Usuario.findByPk(id, { raw: true })
-  res.render("formUsuario", { usuario },) ;
+  res.render("formUsuario", { usuarios },) ;
 })
 
 

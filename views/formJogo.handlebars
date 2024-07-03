@@ -1,0 +1,32 @@
+{{#if jogo}}
+<h1>Atualizar cadastro</h1>
+<form action="/jogos/{{jogo.id}}/atualizar" method="post">
+    {{else}}
+    <h1>Cadastre-se</h1>
+    <form action="/jogo/novo" method="post">
+        {{/if}}
+
+        <div>
+            <!-- Campo para inserir o título -->
+            <label for="titulo">Titulo</label>
+            <input type="text" id="titulo" name="titulo" value="{{jogo.titulo}}">
+        </div>
+
+        <div>
+            <!-- Campo para inserir a descrição -->
+            <label for="descricao">Descrição</label>
+            <input type="text" id="descricao" name="descricao" value="{{jogo.descricao}}">
+        </div>
+
+        <div>
+            <label for="precoBase">Preço</label>
+            <input type="text" id="precoBase" name="precoBase" value="{{jogo.precoBase}}">
+        </div>
+        <button><a href="http://localhost:8000/jogos">Voltar</a></button>
+
+        {{#if jogo}}
+        <input type="submit" value="Salvar" />
+        {{else}}
+        <input type="submit" value="Cadastrar" />
+        {{/if}}
+    </form>
