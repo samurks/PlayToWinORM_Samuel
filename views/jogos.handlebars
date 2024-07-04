@@ -1,6 +1,3 @@
-<h1>Cadastre-se</h1>
-
-<a href="/jogos/novo">Cadastrar Jogos</a>
 <table border="1">
     <tr>
         <td>ID</td>
@@ -14,13 +11,14 @@
         <td>{{this.titulo}}</td>
         <td>{{this.descricao}}</td>
         <td>
-            <button><a href="/jogos/{{this.id}}/atualizar">Atualizar</a></button>
-            <form action="/jogos/excluir" method="post">
+            <a href="/jogos/{{this.id}}/update">Atualizar</a>
+            <form action="/jogos/deletar" method="post">
                 <input name="id" type="hidden" value="{{this.id}}" />
-                <input type="submit" value="Excluir">
+                <input type="submit" value="deletar">
             </form>
-             <button> <a href="/jogos/{{this.id}}/conquistas">Ver conquistas</a></button>
+            <a href="/jogos/{{this.id}}/conquistas">Ver conquistas</a>
         </td>
     </tr>
     {{/each}}
 </table>
+   <a href="/jogos/novo">Cadastrar Jogos</a>

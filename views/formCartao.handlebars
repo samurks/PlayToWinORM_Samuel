@@ -1,5 +1,5 @@
 <h1> Cadastrar Cartão</h1>
-<form action="/usuarios/{{usuario.id}}/novoCartao" method="post">
+<form action="/usuarios/{{usuario.id}}/novocartao" method="post">
 
   <div>
     <label for="numero">Número</label>
@@ -13,11 +13,11 @@
   </div>
   <div>
     <label for="nome">Nome</label>
-    <input type="text" id="nome" name="nome"   maxlength="30" minlength="30" />
+    <input type="text" id="nome" name="nome" />
   </div>
   <div>
     <label for="codSeguranca">Código de Segurança</label>
-    <input type="text" id="codSeguranca" name="codSeguranca" maxlength="3" minlength="3" />
+    <input type="number" id="codSeguranca" name="codSeguranca" />
   </div>
 
   <input type="submit" value="Cadastrar" />

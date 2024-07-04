@@ -1,21 +1,24 @@
-<h1>Cadastre-se</h1>
+{{#if usuario}}
+<h1>Atualizar cadastro</h1>
+<form action="/usuarios/{{usuario.id}}/update" method="post">
+    {{else}}
+    <h1>Cadastre-se</h1>
+    <form action="/usuarios/novo" method="post">
+        {{/if}}
 
-<a href="/usuarios/novo">Cadastrar Usuario</a>
-<table>
-    <tr>
-        <td>ID</td>
-        <td>NickName</td>
-        <td>Nome</td>
-        <th>Ações</th>
-    </tr>
-    {{#each usuarios}}
-    <tr>
-        <td>{{this.id}}</td>
-        <td>{{this.nickname}}</td>
-        <td>{{this.nome}}</td>
-        <td>
-            <a href="/usuarios/{{this.id}}/atualizar">Atualizar</a>
-        </td>
-    </tr>
-    {{/each}}
-</table>
+        <div>
+            <label for="nickname">NickName</label>
+            <input type="text" id="nickname" name="nickname" value="{{usuario.nickname}}">
+        </div>
+
+        <div>
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" value="{{usuario.nome}}">
+        </div>
+        
+        {{#if usuario}}
+        <input type="submit" value="Salvar" />
+        {{else}}
+        <input type="submit" value="Cadastrar" />
+        {{/if}}
+    </form>

@@ -4,15 +4,16 @@ const express = require("express");
 const conn = require("./db/conn");
 const Jogo = require("./models/Jogo");
 const handlebars = require("express-handlebars");
-const { json } = require("express/lib/response");
 const Usuario = require("./models/Usuario");
 const Cartao = require("./models/Cartao");
 const Conquista = require("./models/Conquista")
+const { DataTypes } = require("sequelize");
+
+
+const app = express();
 
 Jogo.belongsToMany(Usuario, { through: "aquisicoes" });
 Usuario.belongsToMany(Jogo, { through: "aquisicoes" });
-
-const app = express();
 
 
 app.engine("handlebars", handlebars.engine())
@@ -23,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
-app.post("/jogo/novo", async (req, res) => {
+app.post("/jogos/novo", async (req, res) => {
   const dadosJogo = {
     titulo: req.body.titulo,
     descricao: req.body.descricao,
@@ -34,8 +35,13 @@ app.post("/jogo/novo", async (req, res) => {
   res.send("Jogo cadastrado com id" + jogo.id);
 });
 
+app.get("/jogos", async (req, res) => {
+  const jogos = await Jogo.findAll({ raw: true });
+  res.render("jogos", { jogos });
+});
 
-app.post("/usuario/novo", async (req, res) => {
+
+app.post("/usuarios/novo", async (req, res) => {
   const dadosUsuario = {
     nickname: req.body.nickname,
     nome: req.body.nome
@@ -45,17 +51,17 @@ app.post("/usuario/novo", async (req, res) => {
   res.send("Usuário inserido sob o id " + usuario.id);
 });
 
-app.get("/jogo/novo", (req, res) => {
-  res.render(`formJogo`);
+app.get("/jogos/novo", (req, res) => {
+  res.render("formJogo");
 });
 
 app.get("/usuarios/novo", (req, res) => {
-  res.render(`formUsuario`);
+  res.render("formUsuario");
 });
 
 
 app.get("/", (req, res) => {
-  res.render(`home`);
+  res.render("home");
 });
 
 app.get("/usuarios", async (req, res) => {
@@ -66,7 +72,32 @@ app.get("/usuarios", async (req, res) => {
 app.get("/usuarios/:id/update", async (req, res) => {
   const id = req.params.id
   const usuario = await Usuario.findByPk(id, { raw: true })
-  res.render("formUsuario", { usuarios },) ;
+  res.render("formUsuario", { usuario },) ;
+})
+
+
+app.post("/jogos/:id/update", async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const dadosJogo = {
+    titulo: req.body.titulo,
+    descricao: req.body.descricao,
+    precoBase: req.body.precoBase
+  }
+
+  const retorno  = await Jogo.update(dadosJogo, { where: { id: id } });
+
+  if (retorno > 0) {
+    res.redirect("/jogos");
+  } else {
+    res.send("Erro ao atualizar jogos");
+  }
+});
+
+app.get("/jogos/:id/update", async (req, res) => {
+  const id = req.params.id
+  const jogo = await Jogo.findByPk(id, { raw: true })
+  res.render("formJogo", { jogo },) ;
 })
 
 
@@ -95,7 +126,7 @@ app.get('/jogos/:id/conquistas', async (req, res) => {
   conquistas = conquistas.map((conquista) => conquista.toJSON())
 
 
-  res.render("Conquista.handlebars", { jogo: jogo.toJSON(), conquistas });
+  res.render("conquista.handlebars", { jogo: jogo.toJSON(), conquistas });
 });
 
 app.get("/jogos/:id/novaConquista", async (req, res) => {
@@ -119,14 +150,18 @@ app.post("/jogos/:id/novaConquista", async (req, res) => {
   res.redirect(`/jogos/${id}/conquistas`);
 });
 
-app.get("/usuarios/:id/novoCartao", async (req, res) => {
-  const id = parseInt(req.params.id);
-  const usuario = await Usuario.findByPk(id, { raw: true });
+app.get('/usuarios/:id/cartoes', async (req, res) => {
+  const id = parseInt(req.params.id)
+  const usuario = await Usuario.findByPk(id, { include: ["Cartaos"] });
 
-  res.render("formCartao", { usuario });
+  let cartoes = usuario.Cartaos;
+  cartoes = cartoes.map((cartao) => cartao.toJSON())
+
+
+  res.render("cartoes.handlebars", { usuario: usuario.toJSON(), cartoes });
 });
 
-app.post("/usuarios/:id/novoCartao", async (req, res) => {
+app.post("/usuarios/:id/novocartao", async (req, res) => {
   const id = parseInt(req.params.id);
 
   const dadosCartao = {
@@ -139,6 +174,28 @@ app.post("/usuarios/:id/novoCartao", async (req, res) => {
   await Cartao.create(dadosCartao);
 
   res.redirect(`/usuarios/${id}/cartoes`);
+});
+
+app.post("/usuarios/deletar", async (req, res) => {
+  const id = req.body.id
+  const retorno = await Usuario.destroy({ where: { id: id } });
+
+  if (retorno > 0) {
+    res.redirect("/usuarios");
+  } else {
+    res.send("Erro ao deletar usuário");
+  }
+});
+
+app.post("/jogos/deletar", async (req, res) => {
+  const id = req.body.id
+  const retorno = await Jogo.destroy({ where: { id: id } });
+
+  if (retorno > 0) {
+    res.redirect("/jogos");
+  } else {
+    res.send("Erro ao deletar usuário");
+  }
 });
 
 // Inicialização do servidor

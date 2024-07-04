@@ -1,6 +1,3 @@
-<h1>Cadastre-se</h1>
-
-<a href="/usuarios/novo">Cadastrar Usuario</a>
 <table border="1">
     <tr>
         <td>ID</td>
@@ -14,13 +11,14 @@
         <td>{{this.nickname}}</td>
         <td>{{this.nome}}</td>
         <td>
-            <button><a href="/usuarios/{{this.id}}/atualizar">Atualizar</a></button>
-            <form action="/usuarios/excluir" method="post">
+           <a href="/usuarios/{{this.id}}/update">Atualizar</a>
+            <form action="/usuarios/deletar" method="post">
                 <input name="id" type="hidden" value="{{this.id}}" />
-                <input type="submit" value="Excluir">
+                <input type="submit" value="deletar">
             </form>
-           <button> <a href="/usuarios/{{this.id}}/cartoes">Ver Cartão</a></button>
+        <a href="/usuarios/{{this.id}}/cartoes">Ver Cartão</a>
         </td>
     </tr>
     {{/each}}
-</table>
+  </table>
+  <a href="/usuarios/novo">Cadastrar Usuario</a>

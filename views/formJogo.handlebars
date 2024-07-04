@@ -1,9 +1,9 @@
 {{#if jogo}}
 <h1>Atualizar cadastro</h1>
-<form action="/jogos/{{jogo.id}}/atualizar" method="post">
+<form action="/jogos/{{jogo.id}}/update" method="post">
     {{else}}
     <h1>Cadastre-se</h1>
-    <form action="/jogo/novo" method="post">
+    <form action="/jogos/novo" method="post">
         {{/if}}
 
         <div>
@@ -20,7 +20,7 @@
             <label for="precoBase">Preço</label>
             <input type="text" id="precoBase" name="precoBase" value="{{jogo.precoBase}}">
         </div>
-        <button><a href="http://localhost:8000/jogos">Voltar</a></button>
+      
 
         {{#if jogo}}
         <input type="submit" value="Salvar" />
